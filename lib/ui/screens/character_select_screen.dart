@@ -4,6 +4,7 @@ import '../../core/managers/character_manager.dart';
 import '../../core/models/character.dart';
 import '../../core/services/storage_service.dart';
 import 'main_game_screen.dart';
+import 'character_customize_screen.dart';
 
 class CharacterSelectScreen extends StatefulWidget {
   const CharacterSelectScreen({super.key});

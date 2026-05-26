@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'character_select_screen.dart';
 import 'main_game_screen.dart';
 import '../../core/services/storage_service.dart';
+import 'history_screen.dart';
 
 class WelcomeScreen extends StatelessWidget {
   const WelcomeScreen({super.key});
@@ -76,7 +77,10 @@ class WelcomeScreen extends StatelessWidget {
                 const SizedBox(height: 16),
                 TextButton(
                   onPressed: () {
-                    _showHistoryDialog(context);
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (_) => const HistoryScreen()),
+                    );
                   },
                   child: const Text(
                     '历史回顾',
@@ -95,28 +99,6 @@ class WelcomeScreen extends StatelessWidget {
               height: 280,
               fit: BoxFit.contain,
             ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  void _showHistoryDialog(BuildContext context) {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('历史回顾'),
-        content: const SizedBox(
-          width: double.maxFinite,
-          height: 300,
-          child: Center(
-            child: Text('暂无历史记录'),
-          ),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('关闭'),
           ),
         ],
       ),

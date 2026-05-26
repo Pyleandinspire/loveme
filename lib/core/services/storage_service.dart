@@ -6,6 +6,7 @@ import '../models/mini_game_record.dart';
 import '../models/dynamic_event_record.dart';
 import '../models/emotion_state.dart';
 import '../models/character.dart';
+import '../models/playthrough_history.dart';
 
 class StorageService extends ChangeNotifier {
   static const String _gameSaveBoxName = 'game_saves';
@@ -14,6 +15,7 @@ class StorageService extends ChangeNotifier {
   static const String _eventsBoxName = 'events';
   static const String _emotionsBoxName = 'emotions';
   static const String _charactersBoxName = 'characters';
+  static const String _historyBoxName = 'playthrough_history';
 
   late Box<GameSave> _gameSaveBox;
   late Box<AIConfig> _aiConfigBox;
@@ -21,6 +23,7 @@ class StorageService extends ChangeNotifier {
   late Box<DynamicEventRecord> _eventsBox;
   late Box<EmotionState> _emotionsBox;
   late Box<Character> _charactersBox;
+  late Box<PlaythroughHistory> _historyBox;
 
   bool _isInitialized = false;
   bool get isInitialized => _isInitialized;
@@ -39,6 +42,7 @@ class StorageService extends ChangeNotifier {
     Hive.registerAdapter(EmotionStateAdapter());
     Hive.registerAdapter(CharacterAdapter());
     Hive.registerAdapter(SharedMemoryAdapter());
+    Hive.registerAdapter(PlaythroughHistoryAdapter());
 
     // Open boxes
     _gameSaveBox = await Hive.openBox<GameSave>(_gameSaveBoxName);
@@ -47,6 +51,7 @@ class StorageService extends ChangeNotifier {
     _eventsBox = await Hive.openBox<DynamicEventRecord>(_eventsBoxName);
     _emotionsBox = await Hive.openBox<EmotionState>(_emotionsBoxName);
     _charactersBox = await Hive.openBox<Character>(_charactersBoxName);
+    _historyBox = await Hive.openBox<PlaythroughHistory>(_historyBoxName);
 
     _isInitialized = true;
     notifyListeners();
@@ -148,6 +153,24 @@ class StorageService extends ChangeNotifier {
 
   List<Character> getAllCharacters() {
     return _charactersBox.values.toList();
+  }
+
+  // Playthrough History Methods
+  Future<void> savePlaythroughHistory(PlaythroughHistory history) async {
+    await _historyBox.put(history.id, history);
+    notifyListeners();
+  }
+
+  List<PlaythroughHistory> getPlaythroughHistory() {
+    final history = _historyBox.values.toList();
+    history.sort((a, b) => b.completedAt.compareTo(a.completedAt));
+    return history;
+  }
+
+  List<PlaythroughHistory> getPlaythroughHistoryForCharacter(String characterId) {
+    return _historyBox.values
+        .where((h) => h.characterId == characterId)
+        .toList();
   }
 
   // Clear All Data

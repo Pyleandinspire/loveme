@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../core/models/ai_config.dart';
 import '../../core/services/storage_service.dart';
+import '../../core/services/ai_service.dart';
 
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});
@@ -152,6 +153,18 @@ class _SettingsScreenState extends State<SettingsScreen> {
             ),
             child: const Text('保存设置'),
           ),
+          const SizedBox(height: 16),
+
+          // 测试连接按钮
+          OutlinedButton.icon(
+            onPressed: _testConnection,
+            icon: const Icon(Icons.wifi_tethering),
+            label: const Text('测试连接'),
+            style: OutlinedButton.styleFrom(
+              foregroundColor: Colors.blue,
+              side: const BorderSide(color: Colors.blue),
+            ),
+          ),
           const SizedBox(height: 32),
 
           // 打字速度
@@ -240,6 +253,73 @@ class _SettingsScreenState extends State<SettingsScreen> {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('设置已保存')),
       );
+    }
+  }
+
+  Future<void> _testConnection() async {
+    if (_apiKeyController.text.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('请先输入 API Key')),
+      );
+      return;
+    }
+
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => const AlertDialog(
+        content: Row(
+          children: [
+            CircularProgressIndicator(),
+            SizedBox(width: 16),
+            Text('正在测试连接...'),
+          ],
+        ),
+      ),
+    );
+
+    try {
+      final config = AIConfig(
+        provider: _selectedProvider,
+        apiKey: _apiKeyController.text,
+        model: _selectedModel,
+        baseUrl: _baseUrlController.text.isNotEmpty ? _baseUrlController.text : null,
+        typingSpeed: _typingSpeed,
+        theme: _theme,
+        soundEnabled: _soundEnabled,
+      );
+      
+      final aiService = AIService(config);
+      final success = await aiService.testConnection();
+
+      if (mounted) {
+        Navigator.pop(context);
+        if (success) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('连接成功！'),
+              backgroundColor: Colors.green,
+            ),
+          );
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('连接失败，请检查 API Key 和网络'),
+              backgroundColor: Colors.red,
+            ),
+          );
+        }
+      }
+    } catch (e) {
+      if (mounted) {
+        Navigator.pop(context);
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('连接错误: $e'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
     }
   }
 

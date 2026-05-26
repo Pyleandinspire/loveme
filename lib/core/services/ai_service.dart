@@ -168,8 +168,28 @@ $userInput
   // 测试API连接
   Future<bool> testConnection() async {
     try {
-      await _sendRequest('Hello');
-      return true;
+      final url = config.baseUrl ?? _getDefaultUrl(config.provider);
+
+      final headers = {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ${config.apiKey}',
+      };
+
+      final body = jsonEncode({
+        'model': config.model,
+        'messages': [
+          {'role': 'user', 'content': 'Hi'}
+        ],
+        'max_tokens': 5,
+      });
+
+      final response = await http.post(
+        Uri.parse(url),
+        headers: headers,
+        body: body,
+      );
+
+      return response.statusCode == 200;
     } catch (e) {
       return false;
     }
