@@ -180,6 +180,15 @@ class Character {
   @HiveField(7)
   Map<String, int> traits;
 
+  @HiveField(8)
+  String appearanceDescription;
+
+  @HiveField(9)
+  List<String> referenceImagePaths;
+
+  @HiveField(10)
+  bool isCustom;
+
   Character({
     required this.id,
     required this.name,
@@ -189,6 +198,9 @@ class Character {
     required this.description,
     required this.backstory,
     required this.traits,
+    required this.appearanceDescription,
+    required this.referenceImagePaths,
+    required this.isCustom,
   });
 
   static Character fromJson(Map<String, dynamic> json) {
@@ -201,6 +213,9 @@ class Character {
       description: json['description'] as String,
       backstory: json['backstory'] as String,
       traits: Map<String, int>.from(json['traits'] as Map),
+      appearanceDescription: json['appearanceDescription'] as String? ?? '',
+      referenceImagePaths: (json['referenceImagePaths'] as List?)?.map((e) => e as String).toList() ?? [],
+      isCustom: json['isCustom'] as bool? ?? false,
     );
   }
 }
@@ -540,6 +555,203 @@ class AIConfig extends HiveObject {
 }
 ```
 
+#### focus_record.dart
+```dart
+import 'package:hive/hive.dart';
+
+part 'focus_record.g.dart';
+
+@HiveType(typeId: 5)
+class FocusRecord extends HiveObject {
+  @HiveField(0)
+  DateTime startTime;
+
+  @HiveField(1)
+  int durationMinutes;
+
+  @HiveField(2)
+  String taskLabel;
+
+  @HiveField(3)
+  bool isSuccess;
+
+  @HiveField(4)
+  String characterId;
+
+  FocusRecord({
+    required this.startTime,
+    required this.durationMinutes,
+    required this.taskLabel,
+    required this.isSuccess,
+    required this.characterId,
+  });
+}
+```
+
+#### dynamic_event_record.dart
+```dart
+import 'package:hive/hive.dart';
+
+part 'dynamic_event_record.g.dart';
+
+@HiveType(typeId: 6)
+class DynamicEventRecord extends HiveObject {
+  @HiveField(0)
+  String eventId;
+
+  @HiveField(1)
+  String title;
+
+  @HiveField(2)
+  String narrativeText;
+
+  @HiveField(3)
+  String? localCgImagePath;
+
+  @HiveField(4)
+  int triggerAffection;
+
+  @HiveField(5)
+  List<String> choices;
+
+  @HiveField(6)
+  List<int> affectionChanges;
+
+  @HiveField(7)
+  DateTime createdAt;
+
+  @HiveField(8)
+  int playthroughNumber;
+
+  DynamicEventRecord({
+    required this.eventId,
+    required this.title,
+    required this.narrativeText,
+    this.localCgImagePath,
+    required this.triggerAffection,
+    required this.choices,
+    required this.affectionChanges,
+    required this.createdAt,
+    required this.playthroughNumber,
+  });
+}
+```
+
+#### mini_game_record.dart
+```dart
+import 'package:hive/hive.dart';
+
+part 'mini_game_record.g.dart';
+
+@HiveType(typeId: 2)
+class MiniGameRecord extends HiveObject {
+  @HiveField(0)
+  String gameType;
+
+  @HiveField(1)
+  int wins;
+
+  @HiveField(2)
+  int losses;
+
+  @HiveField(3)
+  int highScore;
+
+  @HiveField(4)
+  DateTime lastPlayTime;
+
+  MiniGameRecord({
+    required this.gameType,
+    this.wins = 0,
+    this.losses = 0,
+    this.highScore = 0,
+    required this.lastPlayTime,
+  });
+}
+```
+
+#### ai_config.dart
+```dart
+import 'package:hive/hive.dart';
+
+part 'ai_config.g.dart';
+
+@HiveType(typeId: 3)
+class AIConfig extends HiveObject {
+  @HiveField(0)
+  String provider;
+
+  @HiveField(1)
+  String apiKey;
+
+  @HiveField(2)
+  String model;
+
+  @HiveField(3)
+  String? baseUrl;
+
+  @HiveField(4)
+  DateTime updatedAt;
+
+  AIConfig({
+    required this.provider,
+    required this.apiKey,
+    required this.model,
+    this.baseUrl,
+    required this.updatedAt,
+  });
+}
+```
+
+#### custom_character_record.dart
+```dart
+import 'package:hive/hive.dart';
+
+part 'custom_character_record.g.dart';
+
+@HiveType(typeId: 9)
+class CustomCharacterRecord extends HiveObject {
+  @HiveField(0)
+  String customCharacterId;
+
+  @HiveField(1)
+  String baseCharacterId;
+
+  @HiveField(2)
+  String name;
+
+  @HiveField(3)
+  String personality;
+
+  @HiveField(4)
+  String appearanceDescription;
+
+  @HiveField(5)
+  List<String> referenceImagePaths;
+
+  @HiveField(6)
+  String generatedAvatarPath;
+
+  @HiveField(7)
+  String generatedPortraitPath;
+
+  @HiveField(8)
+  DateTime createdAt;
+
+  CustomCharacterRecord({
+    required this.customCharacterId,
+    required this.baseCharacterId,
+    required this.name,
+    required this.personality,
+    required this.appearanceDescription,
+    required this.referenceImagePaths,
+    required this.generatedAvatarPath,
+    required this.generatedPortraitPath,
+    required this.createdAt,
+  });
+}
+```
+
 ### 3. 常量定义
 
 #### app_constants.dart
@@ -807,6 +1019,7 @@ import '../models/emotion_state.dart';
 import '../models/focus_record.dart';
 import '../models/dynamic_event_record.dart';
 import '../models/character.dart';
+import '../models/custom_character_record.dart';
 import '../constants/hive_constants.dart';
 
 class StorageService {
@@ -815,6 +1028,7 @@ class StorageService {
   Box<AIConfig>? _aiConfigBox;
   Box<MiniGameRecord>? _miniGameRecordBox;
   Box<Character>? _charactersBox;
+  Box<CustomCharacterRecord>? _customCharacterBox;
 
   Future<void> init() async {
     await Hive.initFlutter();
@@ -828,6 +1042,7 @@ class StorageService {
     Hive.registerAdapter(MiniGameRecordAdapter());
     Hive.registerAdapter(AIConfigAdapter());
     Hive.registerAdapter(CharacterAdapter());
+    Hive.registerAdapter(CustomCharacterRecordAdapter());
 
     final encryptionKey = await _getOrCreateEncryptionKey();
     final encryptionCipher = HiveAesCipher(encryptionKey);
@@ -839,6 +1054,15 @@ class StorageService {
     );
     _miniGameRecordBox = await Hive.openBox<MiniGameRecord>(HiveConstants.miniGameRecordBox);
     _charactersBox = await Hive.openBox<Character>(HiveConstants.charactersBox);
+    _customCharacterBox = await Hive.openBox<CustomCharacterRecord>('custom_characters');
+  }
+
+  List<CustomCharacterRecord> getCustomCharacters() {
+    return _customCharacterBox!.values.toList();
+  }
+
+  Future<void> saveCustomCharacter(CustomCharacterRecord character) async {
+    await _customCharacterBox!.add(character);
   }
 
   Future<List<int>> _getOrCreateEncryptionKey() async {
@@ -1036,6 +1260,92 @@ class AIService {
           {'text': '有些害羞', 'affection': 5},
         ],
       };
+    } catch (e) {
+      return null;
+    }
+  }
+
+  Future<String?> analyzeImageForAppearance(String base64Image) async {
+    if (!isConfigured) return null;
+
+    try {
+      final response = await http.post(
+        Uri.parse(config!.baseUrl ?? 'https://api.openai.com/v1/chat/completions'),
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ${config!.apiKey}',
+        },
+        body: json.encode({
+          'model': config!.model,
+          'messages': [
+            {
+              'role': 'user',
+              'content': [
+                {
+                  'type': 'text',
+                  'text': '''请分析以下参考图片中的人物外貌特征，并生成一份详细的描述，用于AI绘画生成动漫风格的角色形象。
+
+要求：
+1. 详细描述人物的发型、发色、眼睛颜色、脸型、肤色、身材特征
+2. 描述人物的穿着风格和常见配饰
+3. 描述整体气质和给人的感觉
+4. 适合用于日式动漫风格的绘画描述
+5. 语言要生动且具体，便于AI绘画理解
+6. 字数在150-300字之间
+
+请直接输出外貌描述文本，无需额外格式。'''
+                },
+                {
+                  'type': 'image_url',
+                  'image_url': {
+                    'url': 'data:image/jpeg;base64,$base64Image'
+                  }
+                }
+              ]
+            }
+          ],
+          'temperature': 0.7,
+        }),
+      );
+
+      final jsonData = json.decode(response.body);
+      return jsonData['choices'][0]['message']['content'];
+    } catch (e) {
+      return null;
+    }
+  }
+
+  Future<String?> generateCharacterPortrait(
+    String characterName,
+    String personality,
+    String appearanceDescription,
+  ) async {
+    if (!isConfigured) return null;
+
+    try {
+      final response = await http.post(
+        Uri.parse('https://api.openai.com/v1/images/generations'),
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ${config!.apiKey}',
+        },
+        body: json.encode({
+          'model': 'dall-e-3',
+          'prompt': '''日式动漫风格的角色立绘，角色：$characterName，性格：$personality，外貌：$appearanceDescription。
+
+要求：
+- 风格：精致的日式动漫风格，线条流畅，色彩柔和
+- 角色姿势：自然的站立姿势，面向观众
+- 背景：简单的渐变背景，不要喧宾夺主
+- 分辨率：1024x1024
+- 适合作为游戏角色立绘使用''',
+          'n': 1,
+          'size': '1024x1024',
+        }),
+      );
+
+      final jsonData = json.decode(response.body);
+      return jsonData['data'][0]['url'];
     } catch (e) {
       return null;
     }
@@ -1288,6 +1598,141 @@ class WelcomeScreen extends StatelessWidget {
               ],
             ],
           ),
+        ),
+      ),
+    );
+  }
+}
+```
+
+#### character_select_screen.dart
+```dart
+import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'main_game_screen.dart';
+import 'character_custom_screen.dart';
+import '../../core/managers/character_manager.dart';
+import '../../core/models/game_save.dart';
+import '../../core/services/storage_service.dart';
+
+class CharacterSelectScreen extends StatefulWidget {
+  const CharacterSelectScreen({super.key});
+
+  @override
+  State<CharacterSelectScreen> createState() => _CharacterSelectScreenState();
+}
+
+class _CharacterSelectScreenState extends State<CharacterSelectScreen> {
+  final CharacterManager _characterManager = CharacterManager();
+
+  @override
+  void initState() {
+    super.initState();
+    _characterManager.loadCharacters();
+  }
+
+  Future<void> _startGame(String characterId) async {
+    final storage = Provider.of<StorageService>(context, listen: false);
+    
+    final gameSave = GameSave(
+      currentCharacterId: characterId,
+      affection: 0,
+      dialogueHistory: [],
+      lastPlayTime: DateTime.now(),
+      emotionState: {},
+      shortTermMemory: [],
+      mediumTermMemory: [],
+      longTermMemory: [],
+      generatedEvents: [],
+      playthroughNumber: 1,
+      focusHistory: [],
+      totalFocusMinutes: 0,
+      dailyAffectionGainedFromGames: 0,
+      dailyAffectionGainedFromFocus: 0,
+    );
+
+    await storage.saveGame(gameSave);
+
+    if (mounted) {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (_) => const MainGameScreen()),
+      );
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final characters = _characterManager.loadCharacters();
+    final customCharacters = Provider.of<StorageService>(context).getCustomCharacters();
+    
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('选择你的心动对象'),
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          children: [
+            Expanded(
+              child: ListView.builder(
+                itemCount: characters.length + customCharacters.length,
+                itemBuilder: (context, index) {
+                  if (index < characters.length) {
+                    final character = characters[index];
+                    return Card(
+                      margin: const EdgeInsets.only(bottom: 16),
+                      child: ListTile(
+                        leading: Image.asset(
+                          character.avatar,
+                          width: 50,
+                          height: 50,
+                          fit: BoxFit.cover,
+                        ),
+                        title: Text(character.name),
+                        subtitle: Text(character.description),
+                        onTap: () => _startGame(character.id),
+                      ),
+                    );
+                  } else {
+                    final customChar = customCharacters[index - characters.length];
+                    return Card(
+                      margin: const EdgeInsets.only(bottom: 16),
+                      color: Colors.pink[50],
+                      child: ListTile(
+                        leading: customChar.generatedAvatarPath.isNotEmpty
+                            ? Image.file(
+                                File(customChar.generatedAvatarPath),
+                                width: 50,
+                                height: 50,
+                                fit: BoxFit.cover,
+                              )
+                            : const Icon(Icons.person),
+                        title: Text(customChar.name),
+                        subtitle: const Text('自定义角色'),
+                        onTap: () => _startGame(customChar.customCharacterId),
+                      ),
+                    );
+                  }
+                },
+              ),
+            ),
+            const SizedBox(height: 16),
+            ElevatedButton.icon(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (_) => const CharacterCustomScreen()),
+                );
+              },
+              icon: const Icon(Icons.add),
+              label: const Text('创建自定义角色'),
+              style: ElevatedButton.styleFrom(
+                padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
+                textStyle: const TextStyle(fontSize: 18),
+              ),
+            ),
+          ],
         ),
       ),
     );
@@ -1620,6 +2065,346 @@ class StreamingDialogueBubble extends StatelessWidget {
 }
 ```
 
+#### character_custom_screen.dart
+```dart
+import 'dart:io';
+import 'dart:convert';
+import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:provider/provider.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:path_provider/path_provider.dart';
+import '../../core/models/character.dart';
+import '../../core/models/custom_character_record.dart';
+import '../../core/managers/character_manager.dart';
+import '../../core/services/storage_service.dart';
+import '../../core/services/ai_service.dart';
+
+class CharacterCustomScreen extends StatefulWidget {
+  const CharacterCustomScreen({super.key});
+
+  @override
+  State<CharacterCustomScreen> createState() => _CharacterCustomScreenState();
+}
+
+class _CharacterCustomScreenState extends State<CharacterCustomScreen> {
+  final CharacterManager _characterManager = CharacterManager();
+  final TextEditingController _nameController = TextEditingController();
+  final TextEditingController _personalityController = TextEditingController();
+  final TextEditingController _appearanceController = TextEditingController();
+  final ImagePicker _imagePicker = ImagePicker();
+
+  List<XFile> _selectedImages = [];
+  Character? _selectedBaseCharacter;
+  String? _generatedPortraitUrl;
+  bool _isAnalyzing = false;
+  bool _isGenerating = false;
+
+  Future<void> _loadCharacters() async {
+    await _characterManager.loadCharacters();
+  }
+
+  Future<void> _pickImages() async {
+    final List<XFile>? images = await _imagePicker.pickMultiImage();
+    if (images != null) {
+      setState(() {
+        _selectedImages.addAll(images);
+      });
+    }
+  }
+
+  Future<void> _removeImage(int index) async {
+    setState(() {
+      _selectedImages.removeAt(index);
+    });
+  }
+
+  Future<void> _analyzeImages() async {
+    if (_selectedImages.isEmpty) return;
+
+    setState(() {
+      _isAnalyzing = true;
+    });
+
+    final storage = Provider.of<StorageService>(context, listen: false);
+    final aiConfig = storage.getAIConfig();
+    final aiService = AIService(aiConfig);
+
+    String? appearanceDescription;
+
+    for (final image in _selectedImages) {
+      final bytes = await image.readAsBytes();
+      final base64Image = base64Encode(bytes);
+      appearanceDescription = await aiService.analyzeImageForAppearance(base64Image);
+      if (appearanceDescription != null) break;
+    }
+
+    if (appearanceDescription != null) {
+      setState(() {
+        _appearanceController.text = appearanceDescription!;
+      });
+    }
+
+    setState(() {
+      _isAnalyzing = false;
+    });
+  }
+
+  Future<void> _generatePortrait() async {
+    if (_nameController.text.isEmpty || _appearanceController.text.isEmpty) return;
+
+    setState(() {
+      _isGenerating = true;
+    });
+
+    final storage = Provider.of<StorageService>(context, listen: false);
+    final aiConfig = storage.getAIConfig();
+    final aiService = AIService(aiConfig);
+
+    final portraitUrl = await aiService.generateCharacterPortrait(
+      _nameController.text,
+      _personalityController.text,
+      _appearanceController.text,
+    );
+
+    setState(() {
+      _generatedPortraitUrl = portraitUrl;
+      _isGenerating = false;
+    });
+  }
+
+  Future<void> _saveCustomCharacter() async {
+    if (_nameController.text.isEmpty || _selectedBaseCharacter == null) return;
+
+    final storage = Provider.of<StorageService>(context, listen: false);
+    final appDir = await getApplicationDocumentsDirectory();
+
+    List<String> referencePaths = [];
+    for (int i = 0; i < _selectedImages.length; i++) {
+      final imagePath = '${appDir.path}/saves/references/custom_${DateTime.now().millisecondsSinceEpoch}_$i.jpg';
+      final file = File(imagePath);
+      await file.create(recursive: true);
+      await file.writeAsBytes(await _selectedImages[i].readAsBytes());
+      referencePaths.add('/saves/references/custom_${DateTime.now().millisecondsSinceEpoch}_$i.jpg');
+    }
+
+    String? avatarPath;
+    String? portraitPath;
+    if (_generatedPortraitUrl != null) {
+      final response = await HttpClient().getUrl(Uri.parse(_generatedPortraitUrl!));
+      final responseBytes = await response.close().first;
+      avatarPath = '${appDir.path}/saves/custom_characters/custom_${DateTime.now().millisecondsSinceEpoch}_avatar.jpg';
+      portraitPath = '${appDir.path}/saves/custom_characters/custom_${DateTime.now().millisecondsSinceEpoch}_portrait.jpg';
+      await File(avatarPath).writeAsBytes(responseBytes);
+      await File(portraitPath).writeAsBytes(responseBytes);
+    }
+
+    final customCharacter = CustomCharacterRecord(
+      customCharacterId: 'custom_${DateTime.now().millisecondsSinceEpoch}',
+      baseCharacterId: _selectedBaseCharacter!.id,
+      name: _nameController.text,
+      personality: _personalityController.text,
+      appearanceDescription: _appearanceController.text,
+      referenceImagePaths: referencePaths,
+      generatedAvatarPath: avatarPath ?? '',
+      generatedPortraitPath: portraitPath ?? '',
+      createdAt: DateTime.now(),
+    );
+
+    await storage.saveCustomCharacter(customCharacter);
+
+    if (mounted) {
+      Navigator.pop(context);
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _loadCharacters();
+  }
+
+  @override
+  void dispose() {
+    _nameController.dispose();
+    _personalityController.dispose();
+    _appearanceController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('创建你的专属角色'),
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(16),
+        child: ListView(
+          children: [
+            const Text('选择基础角色', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+            const SizedBox(height: 16),
+            SizedBox(
+              height: 150,
+              child: ListView.builder(
+                scrollDirection: Axis.horizontal,
+                itemCount: _characterManager.loadCharacters().length,
+                itemBuilder: (context, index) {
+                  final characters = _characterManager.loadCharacters();
+                  final character = characters[index];
+                  return GestureDetector(
+                    onTap: () {
+                      setState(() {
+                        _selectedBaseCharacter = character;
+                        _nameController.text = character.name;
+                        _personalityController.text = character.personality;
+                      });
+                    },
+                    child: Container(
+                      margin: const EdgeInsets.only(right: 16),
+                      width: 120,
+                      decoration: BoxDecoration(
+                        border: Border.all(
+                          color: _selectedBaseCharacter?.id == character.id
+                              ? Colors.pink
+                              : Colors.transparent,
+                          width: 3,
+                        ),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: Column(
+                        children: [
+                          ClipRRect(
+                            borderRadius: const BorderRadius.only(
+                              topLeft: Radius.circular(12),
+                              topRight: Radius.circular(12),
+                            ),
+                            child: Image.asset(
+                              character.avatar,
+                              height: 100,
+                              width: 120,
+                              fit: BoxFit.cover,
+                            ),
+                          ),
+                          const SizedBox(height: 8),
+                          Text(character.name),
+                        ],
+                      ),
+                    ),
+                  );
+                },
+              ),
+            ),
+            const SizedBox(height: 24),
+            TextField(
+              controller: _nameController,
+              decoration: const InputDecoration(
+                labelText: '角色名字',
+                border: OutlineInputBorder(),
+              ),
+            ),
+            const SizedBox(height: 16),
+            TextField(
+              controller: _personalityController,
+              decoration: const InputDecoration(
+                labelText: '性格描述',
+                border: OutlineInputBorder(),
+              ),
+              maxLines: 2,
+            ),
+            const SizedBox(height: 24),
+            const Text('上传参考图片', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+            const SizedBox(height: 16),
+            ElevatedButton.icon(
+              onPressed: _pickImages,
+              icon: const Icon(Icons.photo_library),
+              label: const Text('选择图片'),
+            ),
+            const SizedBox(height: 16),
+            if (_selectedImages.isNotEmpty)
+              SizedBox(
+                height: 100,
+                child: ListView.builder(
+                  scrollDirection: Axis.horizontal,
+                  itemCount: _selectedImages.length,
+                  itemBuilder: (context, index) {
+                    return Stack(
+                      alignment: Alignment.topRight,
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.only(right: 8),
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(8),
+                            child: Image.file(
+                              File(_selectedImages[index].path),
+                              width: 100,
+                              height: 100,
+                              fit: BoxFit.cover,
+                            ),
+                          ),
+                        ),
+                        IconButton(
+                          icon: const Icon(Icons.close, color: Colors.white),
+                          onPressed: () => _removeImage(index),
+                        ),
+                      ],
+                    );
+                  },
+                ),
+              ),
+            const SizedBox(height: 16),
+            ElevatedButton.icon(
+              onPressed: _isAnalyzing ? null : _analyzeImages,
+              icon: _isAnalyzing
+                  ? const CircularProgressIndicator()
+                  : const Icon(Icons.auto_awesome),
+              label: Text(_isAnalyzing ? '分析中...' : 'AI分析图片生成外貌描述'),
+            ),
+            const SizedBox(height: 24),
+            TextField(
+              controller: _appearanceController,
+              decoration: const InputDecoration(
+                labelText: '外貌描述',
+                border: OutlineInputBorder(),
+              ),
+              maxLines: 4,
+            ),
+            const SizedBox(height: 24),
+            ElevatedButton.icon(
+              onPressed: _isGenerating ? null : _generatePortrait,
+              icon: _isGenerating
+                  ? const CircularProgressIndicator()
+                  : const Icon(Icons.image),
+              label: Text(_isGenerating ? '生成中...' : '预览角色形象'),
+            ),
+            const SizedBox(height: 16),
+            if (_generatedPortraitUrl != null)
+              ClipRRect(
+                borderRadius: BorderRadius.circular(12),
+                child: Image.network(
+                  _generatedPortraitUrl!,
+                  height: 300,
+                  width: double.infinity,
+                  fit: BoxFit.cover,
+                ),
+              ),
+            const SizedBox(height: 32),
+            ElevatedButton(
+              onPressed: _saveCustomCharacter,
+              style: ElevatedButton.styleFrom(
+                padding: const EdgeInsets.symmetric(horizontal: 48, vertical: 16),
+                textStyle: const TextStyle(fontSize: 20),
+              ),
+              child: const Text('确认创建'),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+```
+
 ### 7. 资源文件
 
 #### pubspec.yaml 完整版本
@@ -1644,6 +2429,7 @@ dependencies:
   speech_to_text: ^6.6.0
   flutter_secure_storage: ^9.0.0
   path_provider: ^2.1.1
+  image_picker: ^1.0.4
 
 dev_dependencies:
   flutter_test:
@@ -1698,6 +2484,158 @@ flutter:
       }
     }
   ]
+}
+```
+
+#### settings_screen.dart
+```dart
+import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import '../../core/services/storage_service.dart';
+import '../../core/models/ai_config.dart';
+
+class SettingsScreen extends StatefulWidget {
+  const SettingsScreen({super.key});
+
+  @override
+  State<SettingsScreen> createState() => _SettingsScreenState();
+}
+
+class _SettingsScreenState extends State<SettingsScreen> {
+  final TextEditingController _apiKeyController = TextEditingController();
+  final TextEditingController _baseUrlController = TextEditingController();
+  String _selectedProvider = 'OpenAI';
+  String _selectedModel = 'gpt-4o';
+
+  @override
+  void initState() {
+    super.initState();
+    _loadSettings();
+  }
+
+  Future<void> _loadSettings() async {
+    final storage = Provider.of<StorageService>(context, listen: false);
+    final aiConfig = storage.getAIConfig();
+    
+    if (aiConfig != null) {
+      setState(() {
+        _apiKeyController.text = aiConfig.apiKey;
+        _baseUrlController.text = aiConfig.baseUrl ?? '';
+        _selectedProvider = aiConfig.provider;
+        _selectedModel = aiConfig.model;
+      });
+    }
+  }
+
+  Future<void> _saveSettings() async {
+    final storage = Provider.of<StorageService>(context, listen: false);
+    
+    final aiConfig = AIConfig(
+      provider: _selectedProvider,
+      apiKey: _apiKeyController.text,
+      model: _selectedModel,
+      baseUrl: _baseUrlController.text.isNotEmpty ? _baseUrlController.text : null,
+      updatedAt: DateTime.now(),
+    );
+
+    await storage.saveAIConfig(aiConfig);
+
+    if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('设置已保存')),
+      );
+    }
+  }
+
+  @override
+  void dispose() {
+    _apiKeyController.dispose();
+    _baseUrlController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('设置'),
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(16),
+        child: ListView(
+          children: [
+            const Text('AI 服务配置', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+            const SizedBox(height: 16),
+            DropdownButtonFormField<String>(
+              value: _selectedProvider,
+              items: const [
+                DropdownMenuItem(value: 'OpenAI', child: Text('OpenAI')),
+                DropdownMenuItem(value: 'Claude', child: Text('Claude')),
+                DropdownMenuItem(value: 'Custom', child: Text('自定义')),
+              ],
+              onChanged: (value) {
+                setState(() {
+                  _selectedProvider = value!;
+                });
+              },
+              decoration: const InputDecoration(
+                labelText: 'AI 服务提供商',
+                border: OutlineInputBorder(),
+              ),
+            ),
+            const SizedBox(height: 16),
+            TextField(
+              controller: _apiKeyController,
+              obscureText: true,
+              decoration: const InputDecoration(
+                labelText: 'API Key',
+                border: OutlineInputBorder(),
+                hintText: '请输入你的 API Key',
+              ),
+            ),
+            const SizedBox(height: 16),
+            TextField(
+              controller: _baseUrlController,
+              decoration: const InputDecoration(
+                labelText: 'Base URL (可选)',
+                border: OutlineInputBorder(),
+                hintText: '自定义 API 地址',
+              ),
+            ),
+            const SizedBox(height: 16),
+            DropdownButtonFormField<String>(
+              value: _selectedModel,
+              items: const [
+                DropdownMenuItem(value: 'gpt-4o', child: Text('gpt-4o')),
+                DropdownMenuItem(value: 'gpt-4-turbo', child: Text('gpt-4-turbo')),
+                DropdownMenuItem(value: 'gpt-3.5-turbo', child: Text('gpt-3.5-turbo')),
+                DropdownMenuItem(value: 'claude-3-opus', child: Text('Claude 3 Opus')),
+                DropdownMenuItem(value: 'claude-3-sonnet', child: Text('Claude 3 Sonnet')),
+              ],
+              onChanged: (value) {
+                setState(() {
+                  _selectedModel = value!;
+                });
+              },
+              decoration: const InputDecoration(
+                labelText: '模型',
+                border: OutlineInputBorder(),
+              ),
+            ),
+            const SizedBox(height: 32),
+            ElevatedButton(
+              onPressed: _saveSettings,
+              style: ElevatedButton.styleFrom(
+                padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
+                textStyle: const TextStyle(fontSize: 18),
+              ),
+              child: const Text('保存设置'),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
 }
 ```
 

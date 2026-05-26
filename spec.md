@@ -33,17 +33,18 @@
 - **多周目平行宇宙机制**：引入周目（Playthrough）计数器。每一次开启新游戏都是一个全新的平行时空，由于记忆起点的不同，即使在相同的好感度节点，解锁的剧情过程、获得的CG图片以及最终的结局也完全不同。
 - **趣味小游戏**：与AI角色对战，胜负影响好感度
 - **永恒结局触发**：当好感度达到1000时，游戏进入最终结局阶段。系统将触发最终结局CG生成，由AI剧情导演根据玩家整个游戏历程生成专属的永恒结局画面和对话，标志着这段恋情的圆满完成。结局画面将自动保存至CG收藏夹，供玩家回顾。
+- **AI角色形象自定义**：玩家可以在创建/选择角色时上传参考图片，AI将根据图片内容生成符合玩家预期的角色外貌描述，用于动态CG和头像生成。
 
 ### 1.4 AI服务方案（本地/单机双引擎版）
 
-本游戏采用纯前端架构，不内置API Key，由玩家在设置页面自行配置。系统通过"文本生成"+"图像生成"双引擎共同驱动：
+本游戏采用纯前端架构，不内置API Key，由玩家在设置页面自行配置。系统通过"文本生成"+"图像生成"+"多模态分析"三引擎共同驱动：
 
-| 服务商/引擎 | 核心对话与剧情导演模型 | 对应支持的图像生成模型（动态CG） | 纯前端运行与调用机制 |
-| :--- | :--- | :--- | :--- |
-| **OpenAI** | `gpt-4o` / `gpt-4-turbo` | `dall-e-3` | 前端通过标准REST API并发请求，获取文本后立刻异步下载图片二进制流 |
-| **Claude** | Claude 3 | DALL-E 3（需配置OpenAI Key） | 前端通过标准REST API并发请求 |
-| **自定义/第三方代理** | 支持标准OpenAI格式的兼容模型 | Stable Diffusion API / Midjourney API | 支持在设置页自定义配置Base URL及专属RequestBody格式 |
-| **国产替代** | 文心一言/通义千问 | 对应厂商图像生成API | 国内访问稳定 |
+| 服务商/引擎 | 核心对话与剧情导演模型 | 对应支持的图像生成模型（动态CG） | 多模态图片分析模型 | 纯前端运行与调用机制 |
+| :--- | :--- | :--- | :--- | :--- |
+| **OpenAI** | `gpt-4o` / `gpt-4-turbo` | `dall-e-3` | `gpt-4o` / `gpt-4-turbo` | 前端通过标准REST API并发请求，获取文本后立刻异步下载图片二进制流 |
+| **Claude** | Claude 3 Opus/Sonnet | DALL-E 3（需配置OpenAI Key） | Claude 3 Opus/Sonnet | 前端通过标准REST API并发请求 |
+| **自定义/第三方代理** | 支持标准OpenAI格式的兼容模型 | Stable Diffusion API / Midjourney API | 支持视觉输入的兼容模型 | 支持在设置页自定义配置BaseURL及专属RequestBody格式 |
+| **国产替代** | 文心一言/通义千问 | 对应厂商图像生成API | 对应厂商多模态模型 | 国内访问稳定 |
 
 **配置流程**：
 1. 首次进入游戏时弹出API Key配置引导
@@ -95,7 +96,23 @@
 | 标题区 | "选择你的心动对象" | 静态展示 |
 | 角色卡片列表 | 展示3-5个可选角色，包含头像、名字、性格标签 | 点击选择 |
 | 角色详情弹窗 | 角色完整介绍、立绘预览 | 点击角色卡片弹出 |
+| "自定义角色"按钮 | 允许玩家基于现有角色进行个性化定制 | 点击进入自定义界面 |
 | 确认按钮 | "开始恋爱"按钮 | 点击进入主界面 |
+
+### 3.2.1 角色自定义界面
+
+| 元素 | 设计说明 | 交互方式 |
+|------|----------|----------|
+| 标题区 | "创建你的专属角色" | 静态展示 |
+| 基础角色选择 | 从现有角色中选择一个作为基础模板 | 点击选择 |
+| 参考图片上传区 | 支持上传照片/图片作为AI生成角色外貌的参考 | 点击打开相册/拍照，支持多图上传 |
+| 图片预览区 | 展示已上传的参考图片 | 点击可删除图片 |
+| AI外貌描述生成按钮 | "生成角色描述"按钮 | 点击调用AI分析图片并生成外貌描述 |
+| 外貌描述编辑区 | 可编辑的AI生成的角色外貌描述文本框 | 文本编辑 |
+| 预览角色按钮 | "预览角色形象"按钮 | 点击调用图像生成API生成角色预览图 |
+| 角色预览区 | 显示AI生成的角色预览图 | 静态展示 |
+| 确认创建按钮 | "确认创建"按钮 | 点击保存自定义角色并返回选择界面 |
+| 返回按钮 | 返回角色选择界面 | 点击返回 |
 
 ### 3.3 主界面
 
@@ -172,6 +189,9 @@
 | description | String | 角色简介 |
 | backstory | String | 背景故事 |
 | traits | Map<String, int> | 性格特征参数(温柔度、活泼度等) |
+| appearanceDescription | String | AI生成的角色外貌详细描述（用于动态CG生成） |
+| referenceImagePaths | List<String> | 用户上传的参考图片相对路径列表 |
+| isCustom | bool | 是否为用户自定义角色 |
 | sharedMemories | List<MemoryEntry> | 与玩家的共同记忆（长期记忆） |
 
 #### 4.1.2 角色示例数据
@@ -188,6 +208,9 @@
       "description": "邻家女孩类型，喜欢阅读和烹饪",
       "backstory": "从小在你家隔壁长大的青梅竹马...",
       "traits": {"gentleness": 85, "liveliness": 40, "shyness": 60, "humor": 50, "tsundere": 20},
+      "appearanceDescription": "长发及腰，黑色直发，眼睛是温柔的棕色，皮肤白皙，身材纤细，常穿浅色连衣裙",
+      "referenceImagePaths": [],
+      "isCustom": false,
       "sharedMemories": [
         {"key": "favorite_color", "value": "用户喜欢蓝色", "timestamp": "2026-05-20"},
         {"key": "nickname", "value": "用户的昵称是'小雨'", "timestamp": "2026-05-22"}
@@ -203,8 +226,98 @@
       "backstory": "学校篮球队队长，总是充满活力...",
       "traits": {"gentleness": 50, "liveliness": 85, "shyness": 20, "humor": 70, "tsundere": 30},
       "sharedMemories": []
+    },
+    {
+      "id": "char_002",
+      "name": "苏雅琪",
+      "avatar": "assets/avatars/yaqi.png",
+      "portrait": "assets/portraits/yaqi.png",
+      "personality": "活泼、开朗、爱冒险",
+      "description": "校园里的人气之星，运动全能",
+      "backstory": "学校篮球队队长，总是充满活力...",
+      "traits": {"gentleness": 50, "liveliness": 85, "shyness": 20, "humor": 70, "tsundere": 30},
+      "appearanceDescription": "短发利落，栗色卷发，眼睛明亮有神，身材健康有活力，常穿运动装",
+      "referenceImagePaths": [],
+      "isCustom": false,
+      "sharedMemories": []
     }
   ]
+}
+```
+
+### 4.1.3 AI角色外貌生成与图片分析
+
+当用户上传参考图片时，系统通过多模态AI（如 GPT-4o、Claude 3 Opus）分析图片内容，生成详细的外貌描述。
+
+**图片分析Prompt模板**：
+```
+【任务】
+请分析以下参考图片中的人物外貌特征，并生成一份详细的描述，用于AI绘画生成动漫风格的角色形象。
+
+【要求】
+1. 详细描述人物的发型、发色、眼睛颜色、脸型、肤色、身材特征
+2. 描述人物的穿着风格和常见配饰
+3. 描述整体气质和给人的感觉
+4. 适合用于日式动漫风格的绘画描述
+5. 语言要生动且具体，便于AI绘画理解
+6. 字数在150-300字之间
+
+【输出格式】
+请直接输出外貌描述文本，无需额外格式。
+```
+
+**角色预览图生成Prompt模板**：
+```
+【角色信息】
+角色名：{角色名}
+性格：{性格描述}
+外貌描述：{AI生成或用户编辑的外貌描述}
+
+【任务】
+请生成一张日式动漫风格的角色立绘图片，要求：
+1. 风格：精致的日式动漫风格，线条流畅，色彩柔和
+2. 角色姿势：自然的站立姿势，面向观众
+3. 背景：简单的渐变背景，不要喧宾夺主
+4. 分辨率：1024x1024
+5. 适合作为游戏角色立绘使用
+```
+
+**图片存储要求**：
+- 用户上传的参考图片保存在应用沙盒目录 `saves/references/` 下
+- 仅在Hive中存储相对路径（如 `/saves/references/photo_001.jpg`）
+- 生成的角色预览图保存在 `saves/custom_characters/` 目录下
+- 所有图片文件名包含时间戳，避免重名
+
+**新增数据模型：CustomCharacterRecord**
+```dart
+@HiveType(typeId: 9)
+class CustomCharacterRecord extends HiveObject {
+  @HiveField(0)
+  String customCharacterId;
+
+  @HiveField(1)
+  String baseCharacterId;
+
+  @HiveField(2)
+  String name;
+
+  @HiveField(3)
+  String personality;
+
+  @HiveField(4)
+  String appearanceDescription;
+
+  @HiveField(5)
+  List<String> referenceImagePaths;
+
+  @HiveField(6)
+  String generatedAvatarPath;
+
+  @HiveField(7)
+  String generatedPortraitPath;
+
+  @HiveField(8)
+  DateTime createdAt;
 }
 ```
 
@@ -1048,6 +1161,72 @@ class DynamicEventRecord extends HiveObject {
   
   @HiveField(8)
   int playthroughNumber; // 所属周目
+}
+
+@HiveType(typeId: 7)
+class Character extends HiveObject {
+  @HiveField(0)
+  String id;
+
+  @HiveField(1)
+  String name;
+
+  @HiveField(2)
+  String avatar;
+
+  @HiveField(3)
+  String portrait;
+
+  @HiveField(4)
+  String personality;
+
+  @HiveField(5)
+  String description;
+
+  @HiveField(6)
+  String backstory;
+
+  @HiveField(7)
+  Map<String, int> traits;
+
+  @HiveField(8)
+  String appearanceDescription;
+
+  @HiveField(9)
+  List<String> referenceImagePaths;
+
+  @HiveField(10)
+  bool isCustom;
+}
+
+@HiveType(typeId: 9)
+class CustomCharacterRecord extends HiveObject {
+  @HiveField(0)
+  String customCharacterId;
+
+  @HiveField(1)
+  String baseCharacterId;
+
+  @HiveField(2)
+  String name;
+
+  @HiveField(3)
+  String personality;
+
+  @HiveField(4)
+  String appearanceDescription;
+
+  @HiveField(5)
+  List<String> referenceImagePaths;
+
+  @HiveField(6)
+  String generatedAvatarPath;
+
+  @HiveField(7)
+  String generatedPortraitPath;
+
+  @HiveField(8)
+  DateTime createdAt;
 }
 ```
 
