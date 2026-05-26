@@ -1,107 +1,65 @@
 # LoveMe 开发任务清单
 
-## 📋 开发流程
-
-### ✅ 阶段 1: 项目初始化
+## 阶段 1：项目初始化
 - [ ] 创建 Flutter 项目
-- [ ] 配置 pubspec.yaml
-- [ ] 建立项目目录结构
-- [ ] 添加静态资源文件夹
+- [ ] 配置 pubspec.yaml 依赖
+- [ ] 创建项目目录结构
+- [ ] 创建 assets 目录和占位文件
 
-### ✅ 阶段 2: 数据模型
-- [ ] Character 模型
-- [ ] DialogueRecord 模型
-- [ ] GameSave 模型
-- [ ] MemoryEntry 模型
-- [ ] AIConfig 模型
-- [ ] MiniGameRecord 模型
-- [ ] FocusRecord 模型
-- [ ] DynamicEventRecord 模型
-- [ ] EmotionState 模型
-- [ ] 运行 build_runner 生成 Hive 适配器
+## 阶段 2：数据模型
+- [ ] 实现 Character 模型
+- [ ] 实现 DialogueRecord 模型
+- [ ] 实现 GameSave 模型
+- [ ] 实现 MemoryEntry 模型
+- [ ] 实现 EmotionState 模型
+- [ ] 实现 FocusRecord 模型
+- [ ] 实现 DynamicEventRecord 模型
+- [ ] 实现 MiniGameRecord 模型
+- [ ] 实现 AIConfig 模型
+- [ ] 生成 Hive 适配器
 
-### ✅ 阶段 3: 核心服务
-- [ ] StorageService 实现
-  - [ ] Hive 初始化
-  - [ ] SharedPreferences 集成
-  - [ ] flutter_secure_storage 密钥管理
-  - [ ] 文件操作（CG保存）
-- [ ] AIService 实现
-  - [ ] 流式响应处理
-  - [ ] API 配置管理
-  - [ ] 图片生成集成
-- [ ] SpeechService 实现
+## 阶段 3：常量和核心管理器
+- [ ] 实现 AppConstants
+- [ ] 实现 HiveConstants
+- [ ] 实现 AffectionManager
+- [ ] 实现 EmotionManager
+- [ ] 实现 MemoryManager
+- [ ] 实现 CharacterManager
 
-### ✅ 阶段 4: 管理器
-- [ ] CharacterManager
-- [ ] MemoryManager
-  - [ ] 短期记忆管理
-  - [ ] 中期记忆压缩
-  - [ ] 长期记忆提炼
-- [ ] AffectionManager
-  - [ ] 好感度计算
-  - [ ] 每日上限检查
-  - [ ] 里程碑检测
-- [ ] EmotionManager
-- [ ] DialogueManager
-- [ ] SceneManager
-- [ ] MiniGameManager
-  - [ ] 21点游戏逻辑
-  - [ ] 成语接龙逻辑
-- [ ] FocusTimerManager（伴学系统）
+## 阶段 4：服务层
+- [ ] 实现 StorageService
+- [ ] 实现 AIService
+- [ ] 实现 PromptBuilder
 
-### ✅ 阶段 5: 工具类
-- [ ] PromptBuilder
-  - [ ] 对话提示词构建
-  - [ ] 场景提示词构建
-  - [ ] 结局提示词构建
-- [ ] MemoryCompressor
+## 阶段 5：UI 组件
+- [ ] 实现 AffectionBar
+- [ ] 实现 DialogueBubble
+- [ ] 实现 StreamingDialogueBubble
 
-### ✅ 阶段 6: UI 实现
-- [ ] WelcomeScreen
-- [ ] CharacterSelectScreen
-- [ ] MainGameScreen
-  - [ ] 对话气泡组件
-  - [ ] 流式对话组件
-  - [ ] 好感度进度条
-  - [ ] 输入工具栏
-- [ ] SceneScreen
-  - [ ] CG 展示
-  - [ ] 对话文本逐字显示
-  - [ ] 选项按钮
-- [ ] SettingsScreen
-  - [ ] API Key 配置
-  - [ ] 打字速度设置
-  - [ ] 主题设置
-  - [ ] 清除数据
-- [ ] TutorialScreen
-- [ ] MiniGameMenuScreen
-- [ ] BlackjackGameScreen
-- [ ] IdiomGameScreen
-- [ ] FocusTimerScreen
+## 阶段 6：屏幕页面
+- [ ] 实现 main.dart 入口
+- [ ] 实现 app.dart 根组件
+- [ ] 实现 WelcomeScreen
+- [ ] 实现 CharacterSelectScreen
+- [ ] 实现 MainGameScreen
+- [ ] 实现 SceneScreen
+- [ ] 实现 EndingScreen
+- [ ] 实现 SettingsScreen
+- [ ] 实现 MiniGameMenuScreen
+- [ ] 实现 BlackjackScreen
+- [ ] 实现 IdiomSolitaireScreen
+- [ ] 实现 FocusTimerScreen
 
-### ✅ 阶段 7: 资源文件
-- [ ] assets/characters.json
-- [ ] assets/dialogue_templates.json
-- [ ] assets/idioms.json
-- [ ] 角色头像资源
-- [ ] 角色立绘资源
-- [ ] 教程图片
+## 阶段 7：资源文件
+- [ ] 创建 characters.json
+- [ ] 创建 idioms.json
+- [ ] 准备头像和立绘资源（或占位图）
 
-### ✅ 阶段 8: 集成与测试
-- [ ] 所有模块集成
-- [ ] 存档/加载测试
-- [ ] AI 响应测试
-- [ ] 小游戏测试
-- [ ] 伴学系统测试
+## 阶段 8：测试和优化
+- [ ] 测试基本流程
+- [ ] 测试存档/读档
+- [ ] 测试 AI 对话
+- [ ] 测试场景生成
+- [ ] 测试小游戏
+- [ ] 测试结局触发
 - [ ] 性能优化
-
----
-
-## 📝 注意事项
-
-1. 严格按照 [spec.md](file:///workspace/spec.md) 中的要求实现
-2. 每个模块完成后进行充分测试
-3. 保持代码风格一致
-4. 适当添加注释
-5. 先实现核心功能，再完善细节
