@@ -1,0 +1,44 @@
+{
+  "characters": [
+    {
+      "id": "char_001",
+      "name": "林小雨",
+      "avatar": "assets/lin_xiaoyu.png",
+      "portrait": "assets/lin_xiaoyu.png",
+      "personality": "温柔、体贴、有点害羞",
+      "description": "邻家女孩类型，喜欢阅读和烹饪",
+      "backstory": "从小在你家隔壁长大的青梅竹马，两人从小一起上学、一起玩耍。虽然长大后各自忙碌，但每次见面都会聊很久。",
+      "traits": {
+        "gentleness": 85,
+        "liveliness": 40,
+        "shyness": 60,
+        "humor": 50,
+        "tsundere": 20
+      },
+      "appearanceDescription": "长发及腰，黑色直发，眼睛是温柔的棕色。平时喜欢穿素雅的衣服，笑起来有两个小酒窝。",
+      "referenceImagePaths": ["assets/lin_xiaoyu.png"],
+      "isCustom": false,
+      "sharedMemories": []
+    },
+    {
+      "id": "char_002",
+      "name": "苏雅琪",
+      "avatar": "assets/su_yaqing.png",
+      "portrait": "assets/su_yaqing.png",
+      "personality": "活泼开朗、直爽大方",
+      "description": "大学同学，社团里的活跃分子",
+      "backstory": "在大学社团活动中认识的朋友，性格开朗大方，总是能带动气氛。虽然有时候说话比较直接，但内心很善良。",
+      "traits": {
+        "gentleness": 50,
+        "liveliness": 90,
+        "shyness": 15,
+        "humor": 80,
+        "tsundere": 10
+      },
+      "appearanceDescription": "齐肩短发，染成了淡淡的棕色，皮肤白皙，笑起来很阳光。穿着时尚但不失青春活力。",
+      "referenceImagePaths": ["assets/su_yaqi.png"],
+      "isCustom": false,
+      "sharedMemories": []
+    }
+  ]
+}
