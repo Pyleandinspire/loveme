@@ -1,0 +1,42 @@
+{
+  "characters": [
+    {
+      "id": "char_001",
+      "name": "林小雨",
+      "avatar": "assets/lin_xiaoyu.png",
+      "portrait": "assets/lin_xiaoyu.png",
+      "personality": "温柔、体贴、有点害羞",
+      "description": "邻家女孩类型，喜欢阅读和烹饪",
+      "backstory": "从小在你家隔壁长大的青梅竹马，一直默默关注着你。",
+      "traits": {
+        "gentleness": 85,
+        "liveliness": 40,
+        "shyness": 60,
+        "humor": 50,
+        "tsundere": 20
+      },
+      "appearanceDescription": "长发及腰，黑色直发，眼睛是温柔的棕色，皮肤白皙，身材纤细，常穿浅色连衣裙",
+      "referenceImagePaths": [],
+      "isCustom": false
+    },
+    {
+      "id": "char_002",
+      "name": "苏雅琪",
+      "avatar": "assets/su_yaqing.png",
+      "portrait": "assets/su_yaqing.png",
+      "personality": "活泼、开朗、爱冒险",
+      "description": "校园里的人气之星，运动全能",
+      "backstory": "学校篮球队队长，总是充满活力，喜欢挑战新事物。",
+      "traits": {
+        "gentleness": 50,
+        "liveliness": 85,
+        "shyness": 20,
+        "humor": 70,
+        "tsundere": 30
+      },
+      "appearanceDescription": "短发利落，栗色卷发，眼睛明亮有神，身材健康有活力，常穿运动装",
+      "referenceImagePaths": [],
+      "isCustom": false
+    }
+  ]
+}
